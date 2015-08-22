@@ -7,21 +7,26 @@ import javax.imageio.ImageIO;
 
 import com.stevenlr.ld33.Animations;
 import com.stevenlr.ld33.Game;
+import com.stevenlr.ld33.components.LivingComponent;
 import com.stevenlr.ld33.components.PhysicalComponent;
+import com.stevenlr.ld33.components.PlayerComponent;
 import com.stevenlr.ld33.entities.HunterSpawnerEntity;
 import com.stevenlr.ld33.entities.LightEntity;
 import com.stevenlr.ld33.entities.PlayerEntity;
+import com.stevenlr.ld33.systems.BulletLogicSystem;
+import com.stevenlr.ld33.systems.BulletRenderSystem;
+import com.stevenlr.ld33.systems.HunterLogicSystem;
 import com.stevenlr.ld33.systems.HunterRenderingSystem;
 import com.stevenlr.ld33.systems.HunterSpawnerSystem;
 import com.stevenlr.ld33.systems.LifeBarRenderSystem;
 import com.stevenlr.ld33.systems.LightRenderSystem;
 import com.stevenlr.ld33.systems.PhysicalMovementSystem;
 import com.stevenlr.ld33.systems.PlayerControllerSystem;
+import com.stevenlr.ld33.systems.TemporaryEntitiesSystem;
 import com.stevenlr.waffle2.graphics.Animation;
 import com.stevenlr.waffle2.graphics.Camera;
 import com.stevenlr.waffle2.graphics.Canvas;
 import com.stevenlr.waffle2.graphics.Renderer;
-import org.joml.Vector2f;
 
 public class Level {
 
@@ -42,8 +47,10 @@ public class Level {
 	private HunterSpawnerSystem _hunterSpawnerSystem = new HunterSpawnerSystem();
 	private HunterRenderingSystem _hunterRenderingSystem = new HunterRenderingSystem();
 	private LifeBarRenderSystem _lifeBarRenderSystem = new LifeBarRenderSystem();
-
-	private float _rotation = 0;
+	private BulletRenderSystem _bulletRenderSystem = new BulletRenderSystem();
+	private BulletLogicSystem _bulletLogicSystem = new BulletLogicSystem();
+	private HunterLogicSystem _hunterLogicSystem = new HunterLogicSystem();
+	private TemporaryEntitiesSystem _temporaryEntitiesSystem = new TemporaryEntitiesSystem();
 
 	public Level(String filename) {
 		BufferedImage img = null;
@@ -83,6 +90,10 @@ public class Level {
 					_tiles[tileIndex] = Tile.floor;
 					new HunterSpawnerEntity(x, y);
 					break;
+				case 0xffffff00:
+					_tiles[tileIndex] = Tile.lava;
+					new LightEntity(x, y, 9, 0.65f, 0.6f, 0.45f);
+					break;
 				default:
 					_tiles[tileIndex] = Tile.wall;
 				}
@@ -97,16 +108,15 @@ public class Level {
 
 	public void update(float dt) {
 		_playerControllerSystem.update(dt);
+		_bulletLogicSystem.update(dt);
 		_hunterSpawnerSystem.update(dt);
+		_hunterLogicSystem.update(dt);
 		_physicalMovementSystem.update(dt, this);
+		_temporaryEntitiesSystem.update(dt);
 
 		if (Math.abs(_player.getAs(PhysicalComponent.class).dx) > 0.01 || Math.abs(_player.getAs(PhysicalComponent.class).dy) > 0.01) {
 			_playerAnimation.update(dt);
 		}
-
-		Vector2f cursor = Game.instance.mouse.getMousePosition();
-
-		_rotation = (float) Math.atan2(Game.HEIGHT / 2 - cursor.y, Game.WIDTH / 2 - cursor.x);
 	}
 
 	public void render(Renderer r) {
@@ -144,11 +154,10 @@ public class Level {
 
 		rl.setDrawParameters(false, false, true);
 		_hunterRenderingSystem.draw(rl);
-		_lifeBarRenderSystem.draw(rl);
 
 		rl.push();
 		rl.translate(_player.getAs(PhysicalComponent.class).x, _player.getAs(PhysicalComponent.class).y);
-		rl.rotate(_rotation);
+		rl.rotate(_player.getAs(PlayerComponent.class).rotation);
 		rl.drawTile(0, 0, PlayerEntity.SIZE * 2, PlayerEntity.SIZE * 2, 1, 1, 1, 0.3f, Game.instance.textureRegistry.getTexture("shadow"));
 		rl.drawTile(0, 0,
 				PlayerEntity.SIZE, PlayerEntity.SIZE,
@@ -158,7 +167,7 @@ public class Level {
 
 		rl.doRenderPass();
 
-		ri.fill(0.2f, 0.2f, 0.2f);
+		ri.fill(0.1f, 0.13f, 0.1f);
 		_lightRenderSystem.draw(ri);
 		ri.doRenderPass();
 
@@ -166,16 +175,30 @@ public class Level {
 		rl.blitCanvas(_canvasLights, 0, 0);
 
 		rl.push();
-		rl.setBlending(Renderer.ADDITIVE);
 		rl.setDrawParameters(false, false, true);
+		rl.setBlending(Renderer.ALPHA);
+		_bulletRenderSystem.draw(rl);
+		_lifeBarRenderSystem.draw(rl);
+
+		rl.setDrawParameters(false, false, true);
+		rl.setBlending(Renderer.ADDITIVE);
 		rl.translate(_player.getAs(PhysicalComponent.class).x, _player.getAs(PhysicalComponent.class).y);
-		rl.rotate(_rotation);
+		rl.rotate(_player.getAs(PlayerComponent.class).rotation);
 		rl.drawTile(0, 0,
 				PlayerEntity.SIZE, PlayerEntity.SIZE,
 				Game.instance.textureRegistry.getTexture("monster", 4));
 		rl.resetDrawParameters();
 		rl.setBlending(Renderer.ALPHA);
 		rl.pop();
+
+		camera.setCenter(Game.WIDTH / 2, Game.HEIGHT / 2);
+		camera.setRadius(Game.WIDTH / 2);
+
+		LivingComponent life = _player.getAs(LivingComponent.class);
+
+		rl.resetDrawParameters();
+		rl.fillRect(20, 20, Game.WIDTH - 40, 20, 0, 0, 0, 1);
+		rl.fillRect(22, 22, (Game.WIDTH - 44) * life.currentLife / life.maxLife, 16, 0.8f, 0.1f, 0.1f, 1);
 
 		r.setBlending(Renderer.ALPHA);
 		r.blitCanvas(_canvasLevel, 0, 0);

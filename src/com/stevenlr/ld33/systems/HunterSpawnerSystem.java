@@ -11,9 +11,10 @@ import com.stevenlr.waffle2.entitysystem.Entity;
 
 public class HunterSpawnerSystem {
 
+	private Random r = new Random();
+
 	public void update(float dt) {
 		List<Entity> entities = Game.instance.entitySystem.getAllEntitiesPossessing(HunterSpawnerComponent.class, PhysicalComponent.class);
-		Random r = new Random();
 
 		for(Entity e : entities) {
 			HunterSpawnerComponent spawner = e.getAs(HunterSpawnerComponent.class);
@@ -21,12 +22,12 @@ public class HunterSpawnerSystem {
 
 			spawner.lastSpawn += dt;
 
-			if (spawner.lastSpawn > 5 + r.nextFloat() * 2 - 1) {
+			if (spawner.lastSpawn > 4.25 + (r.nextFloat() * 2 - 1) * 0.7f) {
 				Entity hunter = new HunterEntity(phys.x, phys.y);
 				PhysicalComponent hunterPhys = hunter.getAs(PhysicalComponent.class);
 
-				hunterPhys.dx = r.nextFloat() * 30;
-				hunterPhys.dy = r.nextFloat() * 30;
+				hunterPhys.dx = r.nextFloat() * 7;
+				hunterPhys.dy = r.nextFloat() * 7;
 				hunterPhys.bounceFactor = 0.95f;
 				hunterPhys.onFloor = false;
 
