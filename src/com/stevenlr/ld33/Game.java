@@ -48,6 +48,7 @@ public class Game implements IWaffle2Game {
 		textureRegistry.registerTexture("/light.png", "light");
 		textureRegistry.registerTexture("/hunter.png", "hunter");
 		textureRegistry.registerTexture("/shadow.png", "shadow");
+		textureRegistry.registerTexture("/grenade.png", "grenade");
 		textureRegistry.registerTexture("/monster.png", "monster", 20, 20);
 	}
 

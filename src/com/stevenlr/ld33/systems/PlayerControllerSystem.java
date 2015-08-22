@@ -8,6 +8,7 @@ import com.stevenlr.ld33.Game;
 import com.stevenlr.ld33.components.PhysicalComponent;
 import com.stevenlr.ld33.components.PlayerComponent;
 import com.stevenlr.ld33.entities.BulletEntity;
+import com.stevenlr.ld33.entities.GrenadeEntity;
 import com.stevenlr.ld33.entities.TemporaryLightEntity;
 import com.stevenlr.waffle2.entitysystem.Entity;
 import org.joml.Vector2f;
@@ -16,6 +17,7 @@ public class PlayerControllerSystem {
 
 	private static final float SPEED = 140;
 	private static final float BULLET_SPEED = 30;
+	private static final float GRENADE_SPEED = 75;
 
 	private Random r = new Random();
 
@@ -63,10 +65,12 @@ public class PlayerControllerSystem {
 		if (Game.instance.mouse.isDown(0) && player.lastShot > 0.1f) {
 			player.lastShot = 0;
 			float spread = (r.nextFloat() * 2 - 1) * 0.07f;
-			new BulletEntity(35, phys.x, phys.y,
-					(float) -Math.cos(player.rotation + spread) * BULLET_SPEED, (float) -Math.sin(player.rotation + spread) * BULLET_SPEED);
+			new GrenadeEntity(phys.x, phys.y,
+					(float) -Math.cos(player.rotation + spread) * GRENADE_SPEED, (float) -Math.sin(player.rotation + spread) * GRENADE_SPEED, 1.5f);
+			/*new BulletEntity(35, phys.x, phys.y,
+					(float) -Math.cos(player.rotation + spread) * BULLET_SPEED, (float) -Math.sin(player.rotation + spread) * BULLET_SPEED);*/
 
-			new TemporaryLightEntity(phys.x, phys.y, 12, 0.4f, 0.4f, 0.2f, 0.05f);
+			//new TemporaryLightEntity(phys.x, phys.y, 12, 0.4f, 0.4f, 0.2f, 0.05f);
 		}
 	}
 }

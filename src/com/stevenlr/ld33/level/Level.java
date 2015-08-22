@@ -15,6 +15,7 @@ import com.stevenlr.ld33.entities.LightEntity;
 import com.stevenlr.ld33.entities.PlayerEntity;
 import com.stevenlr.ld33.systems.BulletLogicSystem;
 import com.stevenlr.ld33.systems.BulletRenderSystem;
+import com.stevenlr.ld33.systems.GrenadeSystem;
 import com.stevenlr.ld33.systems.HunterLogicSystem;
 import com.stevenlr.ld33.systems.HunterRenderingSystem;
 import com.stevenlr.ld33.systems.HunterSpawnerSystem;
@@ -51,6 +52,7 @@ public class Level {
 	private BulletLogicSystem _bulletLogicSystem = new BulletLogicSystem();
 	private HunterLogicSystem _hunterLogicSystem = new HunterLogicSystem();
 	private TemporaryEntitiesSystem _temporaryEntitiesSystem = new TemporaryEntitiesSystem();
+	private GrenadeSystem _grenadeSystem = new GrenadeSystem();
 
 	public Level(String filename) {
 		BufferedImage img = null;
@@ -109,6 +111,7 @@ public class Level {
 	public void update(float dt) {
 		_playerControllerSystem.update(dt);
 		_bulletLogicSystem.update(dt);
+		_grenadeSystem.update(dt);
 		_hunterSpawnerSystem.update(dt);
 		_hunterLogicSystem.update(dt);
 		_physicalMovementSystem.update(dt, this);
@@ -164,6 +167,8 @@ public class Level {
 				_playerAnimation.getTextureId());
 		rl.resetDrawParameters();
 		rl.pop();
+
+		_grenadeSystem.draw(rl);
 
 		rl.doRenderPass();
 
