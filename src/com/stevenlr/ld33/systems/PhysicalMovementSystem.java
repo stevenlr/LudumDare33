@@ -42,10 +42,10 @@ public class PhysicalMovementSystem {
 		float y = phys.y + dy;
 		final float epsilon = 0.001f;
 
-		int x0 = (int) Math.floor(x + epsilon);
-		int y0 = (int) Math.floor(y + epsilon);
-		int x1 = (int) Math.floor(x + phys.sx - epsilon);
-		int y1 = (int) Math.floor(y + phys.sy - epsilon);
+		int x0 = (int) Math.floor(x + epsilon - phys.sx / 2);
+		int y0 = (int) Math.floor(y + epsilon - phys.sy / 2);
+		int x1 = (int) Math.floor(x + phys.sx / 2 - epsilon);
+		int y1 = (int) Math.floor(y + phys.sy / 2 - epsilon);
 
 		for (int ty = y0; ty <= y1; ++ty) {
 			for (int tx = x0; tx <= x1; ++tx) {
@@ -54,26 +54,26 @@ public class PhysicalMovementSystem {
 					float penetrationY = 0;
 
 					if (dx > 0) {
-						penetrationX = x + phys.sx - tx + epsilon;
+						penetrationX = x + phys.sx / 2 - tx + epsilon;
 					} else if (dx < 0) {
-						penetrationX = x - tx - 1 + epsilon;
+						penetrationX = x - tx - 1 + epsilon - phys.sx / 2;
 					}
 
 					if (dy > 0) {
-						penetrationY = y + phys.sy - ty + epsilon;
+						penetrationY = y + phys.sy / 2 - ty + epsilon;
 					} else if (dy < 0) {
-						penetrationY = y - ty - 1 + epsilon;
+						penetrationY = y - ty - 1 + epsilon - phys.sy / 2;
 					}
 
 					phys.x = x - penetrationX;
 					phys.y = y - penetrationY;
 
 					if (penetrationX != 0) {
-						phys.dx = 0;
+						phys.dx *= -phys.bounceFactor;
 					}
 
 					if (penetrationY != 0) {
-						phys.dy = 0;
+						phys.dy *= -phys.bounceFactor;
 					}
 
 					return;

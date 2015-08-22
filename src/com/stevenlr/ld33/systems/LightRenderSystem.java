@@ -25,7 +25,7 @@ public class LightRenderSystem {
 			PhysicalComponent phys = e.getAs(PhysicalComponent.class);
 			LightComponent light = e.getAs(LightComponent.class);
 
-			r.drawTile(phys.x - light.size / 2 + light.offsetX, phys.y - light.size / 2 + light.offsetY, light.size, light.size, light.r, light.g, light.b, 1, _texture);
+			r.drawTile(phys.x - light.size + light.offsetX, phys.y - light.size + light.offsetY, light.size * 2, light.size * 2, light.r, light.g, light.b, 1, _texture);
 		}
 
 		r.doRenderPass();

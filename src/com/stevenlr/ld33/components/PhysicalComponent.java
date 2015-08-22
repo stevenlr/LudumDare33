@@ -12,6 +12,7 @@ public class PhysicalComponent extends Component {
 	public float ay = 0;
 	public float sx = 0;
 	public float sy = 0;
+	public float bounceFactor = 0;
 	public boolean onFloor = true;
 	public boolean moving = true;
 

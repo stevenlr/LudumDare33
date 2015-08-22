@@ -5,14 +5,19 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.stevenlr.ld33.Animations;
 import com.stevenlr.ld33.Game;
 import com.stevenlr.ld33.components.PhysicalComponent;
-import com.stevenlr.ld33.components.PlayerComponent;
+import com.stevenlr.ld33.entities.HunterSpawnerEntity;
 import com.stevenlr.ld33.entities.LightEntity;
 import com.stevenlr.ld33.entities.PlayerEntity;
+import com.stevenlr.ld33.systems.HunterRenderingSystem;
+import com.stevenlr.ld33.systems.HunterSpawnerSystem;
+import com.stevenlr.ld33.systems.LifeBarRenderSystem;
 import com.stevenlr.ld33.systems.LightRenderSystem;
 import com.stevenlr.ld33.systems.PhysicalMovementSystem;
 import com.stevenlr.ld33.systems.PlayerControllerSystem;
+import com.stevenlr.waffle2.graphics.Animation;
 import com.stevenlr.waffle2.graphics.Camera;
 import com.stevenlr.waffle2.graphics.Canvas;
 import com.stevenlr.waffle2.graphics.Renderer;
@@ -26,6 +31,7 @@ public class Level {
 	private float _spawnX;
 	private float _spawnY;
 	private PlayerEntity _player;
+	private Animation.Instance _playerAnimation;
 
 	public Canvas _canvasLevel;
 	public Canvas _canvasLights;
@@ -33,6 +39,9 @@ public class Level {
 	private PlayerControllerSystem _playerControllerSystem = new PlayerControllerSystem();
 	private PhysicalMovementSystem _physicalMovementSystem = new PhysicalMovementSystem();
 	private LightRenderSystem _lightRenderSystem = new LightRenderSystem();
+	private HunterSpawnerSystem _hunterSpawnerSystem = new HunterSpawnerSystem();
+	private HunterRenderingSystem _hunterRenderingSystem = new HunterRenderingSystem();
+	private LifeBarRenderSystem _lifeBarRenderSystem = new LifeBarRenderSystem();
 
 	private float _rotation = 0;
 
@@ -67,8 +76,12 @@ public class Level {
 					_spawnY = y;
 					break;
 				case 0xffff8000:
+					_tiles[tileIndex] = Tile.torch;
+					new LightEntity(x, y, 6, 0.6f, 0.55f, 0.4f);
+					break;
+				case 0xffff0000:
 					_tiles[tileIndex] = Tile.floor;
-					new LightEntity(x, y, 20, 0.7f, 0.65f, 0.5f);
+					new HunterSpawnerEntity(x, y);
 					break;
 				default:
 					_tiles[tileIndex] = Tile.wall;
@@ -76,37 +89,24 @@ public class Level {
 			}
 		}
 
-		for (int y = 1; y < _height - 1; ++y) {
-			for (int x = 1; x < _width - 1; ++x) {
-				int tileIndex = _width * y + x;
-
-				if (_tiles[tileIndex] != Tile.wall) {
-					continue;
-				}
-
-				if (_tiles[tileIndex + 1] != Tile.floor
-						&& _tiles[tileIndex - 1] != Tile.floor
-						&& _tiles[tileIndex + _width] != Tile.floor
-						&& _tiles[tileIndex - _width] != Tile.floor) {
-					_tiles[tileIndex] = Tile.empty;
-				}
-			}
-		}
-
 		_player = new PlayerEntity(_spawnX, _spawnY);
 		_canvasLevel = new Canvas(Game.WIDTH, Game.HEIGHT);
 		_canvasLights = new Canvas(Game.WIDTH, Game.HEIGHT);
+		_playerAnimation = Animations.player.makeInstance();
 	}
 
 	public void update(float dt) {
 		_playerControllerSystem.update(dt);
+		_hunterSpawnerSystem.update(dt);
 		_physicalMovementSystem.update(dt, this);
 
-		PhysicalComponent phys = _player.getAs(PhysicalComponent.class);
+		if (Math.abs(_player.getAs(PhysicalComponent.class).dx) > 0.01 || Math.abs(_player.getAs(PhysicalComponent.class).dy) > 0.01) {
+			_playerAnimation.update(dt);
+		}
+
 		Vector2f cursor = Game.instance.mouse.getMousePosition();
 
-		_rotation = (float) Math.atan2((double) phys.y - cursor.y + Game.HEIGHT / 2,
-				(double) phys.x - cursor.x + Game.WIDTH / 2);
+		_rotation = (float) Math.atan2(Game.HEIGHT / 2 - cursor.y, Game.WIDTH / 2 - cursor.x);
 	}
 
 	public void render(Renderer r) {
@@ -116,10 +116,10 @@ public class Level {
 		Camera camera = rl.getCamera();
 		Camera camera2 = ri.getCamera();
 
-		camera.setRadius(8);
+		camera.setRadius(10);
 		camera.setCenter(_player.getAs(PhysicalComponent.class).x, _player.getAs(PhysicalComponent.class).y);
-		camera2.setRadius(8);
-		camera2.setCenter(_player.getAs(PhysicalComponent.class).x, _player.getAs(PhysicalComponent.class).y);
+		camera2.setRadius(camera.getRadius());
+		camera2.setCenter(camera.getCenter());
 
 		rl.fill(0, 0, 0);
 
@@ -141,26 +141,44 @@ public class Level {
 			}
 		}
 
-		rl.push();
+
 		rl.setDrawParameters(false, false, true);
+		_hunterRenderingSystem.draw(rl);
+		_lifeBarRenderSystem.draw(rl);
+
+		rl.push();
 		rl.translate(_player.getAs(PhysicalComponent.class).x, _player.getAs(PhysicalComponent.class).y);
 		rl.rotate(_rotation);
-		rl.fillRect(0, 0,
+		rl.drawTile(0, 0, PlayerEntity.SIZE * 2, PlayerEntity.SIZE * 2, 1, 1, 1, 0.3f, Game.instance.textureRegistry.getTexture("shadow"));
+		rl.drawTile(0, 0,
 				PlayerEntity.SIZE, PlayerEntity.SIZE,
-				0, 0.6f, 0, 1);
+				_playerAnimation.getTextureId());
 		rl.resetDrawParameters();
 		rl.pop();
 
 		rl.doRenderPass();
 
-		ri.fill(0, 0, 0);
+		ri.fill(0.2f, 0.2f, 0.2f);
 		_lightRenderSystem.draw(ri);
 		ri.doRenderPass();
 
+		rl.setBlending(Renderer.MULTIPLICATIVE);
+		rl.blitCanvas(_canvasLights, 0, 0);
+
+		rl.push();
+		rl.setBlending(Renderer.ADDITIVE);
+		rl.setDrawParameters(false, false, true);
+		rl.translate(_player.getAs(PhysicalComponent.class).x, _player.getAs(PhysicalComponent.class).y);
+		rl.rotate(_rotation);
+		rl.drawTile(0, 0,
+				PlayerEntity.SIZE, PlayerEntity.SIZE,
+				Game.instance.textureRegistry.getTexture("monster", 4));
+		rl.resetDrawParameters();
+		rl.setBlending(Renderer.ALPHA);
+		rl.pop();
+
 		r.setBlending(Renderer.ALPHA);
 		r.blitCanvas(_canvasLevel, 0, 0);
-		r.setBlending(Renderer.MULTIPLICATIVE);
-		r.blitCanvas(_canvasLights, 0, 0);
 	}
 
 	public boolean isSolidAt(int x, int y) {
