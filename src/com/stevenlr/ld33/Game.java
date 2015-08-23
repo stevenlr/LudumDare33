@@ -1,7 +1,5 @@
 package com.stevenlr.ld33;
 
-import com.stevenlr.ld33.level.Level;
-import com.stevenlr.ld33.screens.GameScreen;
 import com.stevenlr.ld33.screens.IScreen;
 import com.stevenlr.ld33.screens.MainScreen;
 import com.stevenlr.waffle2.IWaffle2Game;
@@ -27,7 +25,7 @@ public class Game implements IWaffle2Game {
 	public static final int RESOLUTION = 1;
 	public static final int WIDTH = 1000 / RESOLUTION;
 	public static final int HEIGHT = 700 / RESOLUTION;
-	public static final String TITLE = "The Ugly Hunted";
+	public static final String TITLE = "Trapped & Angry";
 
 	public static Game instance;
 
