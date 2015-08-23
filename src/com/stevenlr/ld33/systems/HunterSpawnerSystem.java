@@ -13,8 +13,9 @@ public class HunterSpawnerSystem {
 
 	private Random r = new Random();
 
-	public void update(float dt) {
+	public void update(float dt, int level) {
 		List<Entity> entities = Game.instance.entitySystem.getAllEntitiesPossessing(HunterSpawnerComponent.class, PhysicalComponent.class);
+		float spawnRate = 4.25f - 0.7f * (level - 1);
 
 		for(Entity e : entities) {
 			HunterSpawnerComponent spawner = e.getAs(HunterSpawnerComponent.class);
@@ -22,7 +23,7 @@ public class HunterSpawnerSystem {
 
 			spawner.lastSpawn += dt;
 
-			if (spawner.lastSpawn > 4.25 + (r.nextFloat() * 2 - 1) * 0.7f) {
+			if (spawner.lastSpawn > spawnRate + (r.nextFloat() * 2 - 1) * 0.7f) {
 				Entity hunter = new HunterEntity(phys.x, phys.y);
 				PhysicalComponent hunterPhys = hunter.getAs(PhysicalComponent.class);
 

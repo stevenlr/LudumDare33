@@ -10,6 +10,7 @@ import com.stevenlr.ld33.components.LivingComponent;
 import com.stevenlr.ld33.components.PhysicalComponent;
 import com.stevenlr.ld33.components.PlayerComponent;
 import com.stevenlr.ld33.entities.BulletEntity;
+import com.stevenlr.ld33.entities.CoinEntity;
 import com.stevenlr.ld33.entities.TemporaryLightEntity;
 import com.stevenlr.waffle2.entitysystem.Entity;
 import org.joml.Vector2f;
@@ -30,14 +31,19 @@ public class HunterLogicSystem {
 		}
 
 		for (Entity e : entities) {
+			PhysicalComponent ep = e.getAs(PhysicalComponent.class);
+
 			if (e.getAs(LivingComponent.class).currentLife <= 0) {
 				Game.instance.entitySystem.removeEntity(e);
+				Entity c = new CoinEntity(ep.x, ep.y);
+				c.getAs(PhysicalComponent.class).dx = ep.dx * 5;
+				c.getAs(PhysicalComponent.class).dy = ep.dy * 5;
+				playerEntity.getAs(PlayerComponent.class).score++;
 				continue;
 			}
 
 			if (playerEntity != null) {
 				EnnemyComponent en = e.getAs(EnnemyComponent.class);
-				PhysicalComponent ep = e.getAs(PhysicalComponent.class);
 				PhysicalComponent pp = playerEntity.getAs(PhysicalComponent.class);
 
 				en.lastShot += dt;

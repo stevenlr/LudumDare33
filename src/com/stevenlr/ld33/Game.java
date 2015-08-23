@@ -21,8 +21,8 @@ import com.stevenlr.waffle2.input.MouseHandler;
 public class Game implements IWaffle2Game {
 
 	public static final int RESOLUTION = 1;
-	public static final int WIDTH = 800 / RESOLUTION;
-	public static final int HEIGHT = 600 / RESOLUTION;
+	public static final int WIDTH = 1000 / RESOLUTION;
+	public static final int HEIGHT = 700 / RESOLUTION;
 
 	public static Game instance;
 
@@ -49,7 +49,11 @@ public class Game implements IWaffle2Game {
 		textureRegistry.registerTexture("/hunter.png", "hunter");
 		textureRegistry.registerTexture("/shadow.png", "shadow");
 		textureRegistry.registerTexture("/grenade.png", "grenade");
+		textureRegistry.registerTexture("/icons.png", "icons", 16, 16);
+		textureRegistry.registerTexture("/coin.png", "coin", 8, 8);
 		textureRegistry.registerTexture("/monster.png", "monster", 20, 20);
+
+		Waffle2.getInstance().getFontRegistry().registerFont("font", "/pixelmix.ttf", 32);
 	}
 
 	@Override
@@ -59,6 +63,12 @@ public class Game implements IWaffle2Game {
 		Animations.player.addFrame(1, 0.2f);
 		Animations.player.addFrame(2, 0.2f);
 		Animations.player.addFrame(3, 0.2f);
+
+		Animations.coin = new Animation("coin");
+		Animations.coin.addFrame(0, 0.25f);
+		Animations.coin.addFrame(1, 0.25f);
+		Animations.coin.addFrame(2, 0.25f);
+		Animations.coin.addFrame(3, 0.25f);
 
 		_level = new Level("/level.png");
 	}
