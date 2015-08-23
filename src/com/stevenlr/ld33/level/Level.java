@@ -17,6 +17,7 @@ import com.stevenlr.ld33.components.PlayerComponent;
 import com.stevenlr.ld33.entities.HunterSpawnerEntity;
 import com.stevenlr.ld33.entities.LightEntity;
 import com.stevenlr.ld33.entities.PlayerEntity;
+import com.stevenlr.ld33.screens.ScoreScreen;
 import com.stevenlr.ld33.systems.AnimatedTextureSystem;
 import com.stevenlr.ld33.systems.BulletLogicSystem;
 import com.stevenlr.ld33.systems.BulletRenderSystem;
@@ -161,6 +162,11 @@ public class Level {
 			if (_deathTime >= 3) {
 				_currentState = State.BUYING;
 				_level++;
+
+				if (_level > 5) {
+					PlayerComponent player = _player.getAs(PlayerComponent.class);
+					Game.instance.setNextScreen(new ScoreScreen(player.score, player.gold / 2));
+				}
 			}
 		}
 	}

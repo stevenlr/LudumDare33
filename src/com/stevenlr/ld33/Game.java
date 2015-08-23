@@ -1,6 +1,9 @@
 package com.stevenlr.ld33;
 
 import com.stevenlr.ld33.level.Level;
+import com.stevenlr.ld33.screens.GameScreen;
+import com.stevenlr.ld33.screens.IScreen;
+import com.stevenlr.ld33.screens.MainScreen;
 import com.stevenlr.waffle2.IWaffle2Game;
 import com.stevenlr.waffle2.Waffle2;
 import com.stevenlr.waffle2.Waffle2Game;
@@ -26,7 +29,9 @@ public class Game implements IWaffle2Game {
 
 	public static Game instance;
 
-	private Level _level;
+	private IScreen _currentScreen;
+	private IScreen _nextScreen;
+
 	public TextureRegistry textureRegistry;
 	public EntitySystem entitySystem;
 	public KeyboardHandler keyboard;
@@ -70,16 +75,25 @@ public class Game implements IWaffle2Game {
 		Animations.coin.addFrame(2, 0.25f);
 		Animations.coin.addFrame(3, 0.25f);
 
-		_level = new Level("/level.png");
+		_currentScreen = new MainScreen();
 	}
 
 	@Override
 	public void update(float dt) {
-		_level.update(dt);
+		if (_nextScreen != null) {
+			_currentScreen = _nextScreen;
+			_nextScreen = null;
+		}
+
+		_currentScreen.update(dt);
 	}
 
 	@Override
 	public void draw(Renderer r) {
-		_level.render(r);
+		_currentScreen.draw(r);
+	}
+
+	public void setNextScreen(IScreen screen) {
+		_nextScreen = screen;
 	}
 }
