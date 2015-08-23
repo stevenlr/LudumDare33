@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 
 import com.stevenlr.ld33.Animations;
 import com.stevenlr.ld33.Game;
+import com.stevenlr.ld33.Particles;
 import com.stevenlr.ld33.components.BulletComponent;
 import com.stevenlr.ld33.components.CoinComponent;
 import com.stevenlr.ld33.components.EnnemyComponent;
@@ -46,7 +47,7 @@ public class Level {
 	}
 
 	public static final int INV_HEIGHT = 80;
-	public static final int NADE_COST = 10;
+	public static final int NADE_COST = 3;
 
 	private State _currentState = State.PLAYING;
 	private int _width;
@@ -157,6 +158,10 @@ public class Level {
 				_playerAnimation.update(dt);
 			}
 		} else {
+			if (_deathTime == 0) {
+				Game.instance.audioRegistry.getSource("lost").play();
+			}
+
 			_deathTime += dt;
 
 			if (_deathTime >= 3) {
@@ -180,6 +185,7 @@ public class Level {
 			if (player.gold >= NADE_COST && _buyGrenadeButton.isIn(pos.x, pos.y)) {
 				player.gold -= NADE_COST;
 				player.nbGrenades++;
+				Game.instance.audioRegistry.getSource("select").play();
 			}
 
 			if (player.gold >= player.nextUpgradeCost) {
@@ -188,15 +194,19 @@ public class Level {
 				if (_speedRiffleButton.isIn(pos.x, pos.y)) {
 					player.riffleCooldown *= 0.9;
 					upgraded = true;
+					Game.instance.audioRegistry.getSource("select").play();
 				} else if (_damageRiffleButton.isIn(pos.x, pos.y)) {
 					player.riffleDamage *= 1.2;
 					upgraded = true;
+					Game.instance.audioRegistry.getSource("select").play();
 				} else if (_speedShotgunButton.isIn(pos.x, pos.y)) {
 					player.sgCooldown *= 0.9;
 					upgraded = true;
+					Game.instance.audioRegistry.getSource("select").play();
 				} else if (_damageShotgunButton.isIn(pos.x, pos.y)) {
 					player.sgDamage *= 1.2;
 					upgraded = true;
+					Game.instance.audioRegistry.getSource("select").play();
 				}
 
 				if (upgraded) {
@@ -208,6 +218,7 @@ public class Level {
 			if (_continueButton.isIn(pos.x, pos.y)) {
 				_currentState = State.PLAYING;
 				clearLevel();
+				Game.instance.audioRegistry.getSource("select").play();
 
 				LivingComponent life = _player.getAs(LivingComponent.class);
 
@@ -377,6 +388,8 @@ public class Level {
 		_grenadeSystem.draw(rl);
 		_animatedTextureSystem.draw(rl);
 
+		Particles.drawAlpha(rl);
+
 		rl.doRenderPass();
 
 		ri.fill(0.05f, 0.08f, 0.05f);
@@ -402,6 +415,9 @@ public class Level {
 		rl.resetDrawParameters();
 		rl.setBlending(Renderer.ALPHA);
 		rl.pop();
+
+		Particles.drawAdditive(rl);
+		rl.setBlending(Renderer.ALPHA);
 
 		camera.setCenter(Game.WIDTH / 2, (Game.HEIGHT - INV_HEIGHT) / 2);
 		camera.setRadius(Game.WIDTH / 2);

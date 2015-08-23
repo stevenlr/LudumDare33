@@ -72,10 +72,6 @@ public class PlayerControllerSystem {
 			player.selectedWeapon = 1;
 		}
 
-		if (Game.instance.keyboard.wasPressed(Config.KEY_GRENADE)) {
-			player.selectedWeapon = 2;
-		}
-
 		if (player.selectedWeapon == 0 && Game.instance.mouse.isDown(0) && player.lastShot > player.riffleCooldown) {
 			player.lastShot = 0;
 			float spread = (r.nextFloat() * 2 - 1) * 0.07f;
@@ -83,6 +79,7 @@ public class PlayerControllerSystem {
 					(float) -Math.cos(player.rotation + spread) * BULLET_SPEED, (float) -Math.sin(player.rotation + spread) * BULLET_SPEED);
 
 			new TemporaryLightEntity(phys.x, phys.y, 12, 0.4f, 0.4f, 0.2f, 0.05f);
+			Game.instance.audioRegistry.getSource("shoot").play(1.0f, r.nextFloat() * 0.3f + 1);
 		}
 
 		if (player.selectedWeapon == 1 && Game.instance.mouse.isDown(0) && player.lastShot > player.sgCooldown) {
@@ -95,9 +92,11 @@ public class PlayerControllerSystem {
 
 				new TemporaryLightEntity(phys.x, phys.y, 12, 0.4f, 0.4f, 0.2f, 0.05f);
 			}
+
+			Game.instance.audioRegistry.getSource("shoot").play();
 		}
 
-		if (player.selectedWeapon == 2 && Game.instance.mouse.wasPressed(0) && player.nbGrenades > 0) {
+		if (Game.instance.mouse.wasPressed(1) && player.nbGrenades > 0) {
 			player.nbGrenades--;
 
 			new GrenadeEntity(phys.x, phys.y,
@@ -114,6 +113,7 @@ public class PlayerControllerSystem {
 			if (dist < 4) {
 				Game.instance.entitySystem.removeEntity(c);
 				player.gold += r.nextInt(2 + level / 2) + 1;
+				Game.instance.audioRegistry.getSource("coin").play();
 			}
 		}
 	}

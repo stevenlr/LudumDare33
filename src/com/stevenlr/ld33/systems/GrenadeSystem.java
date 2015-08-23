@@ -3,6 +3,7 @@ package com.stevenlr.ld33.systems;
 import java.util.List;
 
 import com.stevenlr.ld33.Game;
+import com.stevenlr.ld33.Particles;
 import com.stevenlr.ld33.components.GrenadeComponent;
 import com.stevenlr.ld33.components.LivingComponent;
 import com.stevenlr.ld33.components.PhysicalComponent;
@@ -36,6 +37,8 @@ public class GrenadeSystem {
 			if (grenade.timeLeft <= 0) {
 				Game.instance.entitySystem.removeEntity(e);
 				new TemporaryLightEntity(phys.x, phys.y, 20, 1f, 0.9f, 0.7f, 0.07f);
+				Game.instance.audioRegistry.getSource("explosion").play();
+				Particles.spawnExplosion(phys.x, phys.y);
 
 				for (Entity d : damageables) {
 					PhysicalComponent pos = d.getAs(PhysicalComponent.class);

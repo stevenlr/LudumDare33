@@ -22,6 +22,7 @@ public class ScoreScreen implements IScreen {
 		if (Game.instance.mouse.wasPressed(0)) {
 			Game.instance.entitySystem.removeAllEntities();
 			Game.instance.setNextScreen(new MainScreen());
+			Game.instance.audioRegistry.getSource("select").play();
 		}
 	}
 

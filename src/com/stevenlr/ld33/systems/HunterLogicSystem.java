@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.stevenlr.ld33.Game;
+import com.stevenlr.ld33.Particles;
 import com.stevenlr.ld33.components.BulletComponent;
 import com.stevenlr.ld33.components.EnnemyComponent;
 import com.stevenlr.ld33.components.LivingComponent;
@@ -35,6 +36,8 @@ public class HunterLogicSystem {
 
 			if (e.getAs(LivingComponent.class).currentLife <= 0) {
 				Game.instance.entitySystem.removeEntity(e);
+				Game.instance.audioRegistry.getSource("death").play();
+				Particles.spawnBlood(ep.x, ep.y);
 				Entity c = new CoinEntity(ep.x, ep.y);
 				c.getAs(PhysicalComponent.class).dx = ep.dx * 5;
 				c.getAs(PhysicalComponent.class).dy = ep.dy * 5;
@@ -58,6 +61,7 @@ public class HunterLogicSystem {
 					bullet.getAs(BulletComponent.class).friendly = false;
 
 					new TemporaryLightEntity(ep.x, ep.y, 10, 0.3f, 0.3f, 0.3f, 0.05f);
+					Game.instance.audioRegistry.getSource("shoot").play();
 				}
 			}
 		}

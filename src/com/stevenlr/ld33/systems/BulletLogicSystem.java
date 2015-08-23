@@ -45,6 +45,7 @@ public class BulletLogicSystem {
 					if (overlap(ephys, phys)) {
 						Game.instance.entitySystem.removeEntity(b);
 						life.currentLife = Math.max(0, life.currentLife - bullet.damage);
+						Game.instance.audioRegistry.getSource("hurt").play();
 						break;
 					}
 				}

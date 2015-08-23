@@ -5,9 +5,9 @@ import com.stevenlr.waffle2.entitysystem.Component;
 public class PlayerComponent extends Component {
 
 	public float rotation;
-	public float lastShot = 1000;
+	public float lastShot = 0;
 	public int selectedWeapon = 0;
-	public int nbGrenades = 0;
+	public int nbGrenades = 3;
 	public float riffleDamage = 33;
 	public float sgDamage = 19;
 	public float riffleCooldown = 0.12f;
