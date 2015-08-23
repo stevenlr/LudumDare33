@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="Waffle2" default="dist" basedir=".">
+	<property name="src" value="src" />
+	<property name="res" value="res" />
+	<property name="build" value="build" />
+	<property name="dist" value="dist" />
+	<property name="name" value="TrappedAngry" />
+	<property name="jarfile" value="${name}.jar" />
+	<property name="waffle2dist" value="../Waffle2/dist/" />
+	<property name="native" value="../Waffle2/libs/native" />
+	<property name="mainclass" value="com.stevenlr.ld33.Game" />
+
+	<target name="build">
+		<ant target="clean" />
+		<mkdir dir="${build}" />
+		<javac srcdir="${src}" destdir="${build}" includes="**" target="1.7" source="1.7">
+			<classpath>
+				<pathelement path="${waffle2dist}/Waffle2.jar" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="dist" depends="build">
+		<delete dir="${dist}" />
+		<mkdir dir="${dist}" />
+		<copydir src="${native}" dest="${dist}/native" />
+		<jar jarfile="${dist}/${jarfile}">
+			<fileset dir="${build}" />
+			<fileset dir="${res}" excludes="**/Thumbs.db" />
+			<zipgroupfileset dir="${waffle2dist}" includes="Waffle2.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="${mainclass}" />
+			</manifest>
+		</jar>
+		<zip destfile="${dist}/${name}.zip" basedir="${dist}" includes="*.jar,native/*" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${build}" />
+	</target>
+</project>

@@ -329,8 +329,8 @@ public class Level {
 		ri.fill(0, 0, 0);
 		ri.drawTile(10, 10, 60, 60, 1, 1, 1, (player.selectedWeapon == 0) ? 1 : 0.3f, Game.instance.textureRegistry.getTexture("icons", 0));
 		ri.drawTile(80 + 20, 10, 60, 60, 1, 1, 1, (player.selectedWeapon == 1) ? 1 : 0.3f, Game.instance.textureRegistry.getTexture("icons", 1));
-		ri.drawTile(2 * 80 + 20, 10, 60, 60, 1, 1, 1, (player.selectedWeapon == 2) ? 1 : 0.3f, Game.instance.textureRegistry.getTexture("icons", 2));
-		ri.drawText("font", "" + player.nbGrenades, 3 * 80 + 20, 20, 50, 1, 1, 1, (player.selectedWeapon == 2) ? 1 : 0.3f, Font.Alignment.LEFT);
+		ri.drawTile(2 * 80 + 20, 10, 60, 60, 1, 1, 1, 1, Game.instance.textureRegistry.getTexture("icons", 2));
+		ri.drawText("font", "" + player.nbGrenades, 3 * 80 + 20, 20, 50, 1, 1, 1, 1, Font.Alignment.LEFT);
 		ri.drawTile(5 * 80 + 20, 10, 60, 60, 1, 1, 1, 1f, Game.instance.textureRegistry.getTexture("icons", 3));
 		ri.drawText("font", "" + player.gold, 6 * 80 + 20, 20, 50, 1, 1, 1, 1, Font.Alignment.LEFT);
 
