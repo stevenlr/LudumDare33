@@ -43,7 +43,10 @@ public class MainScreen implements IScreen {
 		r.drawText("font", "Launch grenade", Game.WIDTH / 2 - 200, 180, 20, 1, 1, 1, 0.4f, Font.Alignment.LEFT);
 		r.drawText("font", "Right click", Game.WIDTH / 2 + 200, 180, 20, 1, 1, 1, 0.4f, Font.Alignment.RIGHT);
 
-		r.drawText("font", "Click to start", Game.WIDTH / 2, 90, 30, 1, 1, 1, 0.6f, Font.Alignment.MIDDLE);
+		r.drawText("font", "Toggle  music", Game.WIDTH / 2 - 200, 140, 20, 1, 1, 1, 0.4f, Font.Alignment.LEFT);
+		r.drawText("font", "F", Game.WIDTH / 2 + 200, 140, 20, 1, 1, 1, 0.4f, Font.Alignment.RIGHT);
+
+		r.drawText("font", "Click to start", Game.WIDTH / 2, 70, 30, 1, 1, 1, 0.6f, Font.Alignment.MIDDLE);
 
 		r.drawText("font", "By Steven Le Rouzic <stevenlr.com>", 20, 20, 16, 1, 1, 1, 0.4f, Font.Alignment.LEFT);
 		r.drawText("font", "For Ludum Dare 33", Game.WIDTH - 20, 20, 16, 1, 1, 1, 0.4f, Font.Alignment.RIGHT);

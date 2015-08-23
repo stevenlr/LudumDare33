@@ -79,7 +79,7 @@ public class PlayerControllerSystem {
 					(float) -Math.cos(player.rotation + spread) * BULLET_SPEED, (float) -Math.sin(player.rotation + spread) * BULLET_SPEED);
 
 			new TemporaryLightEntity(phys.x, phys.y, 12, 0.4f, 0.4f, 0.2f, 0.05f);
-			Game.instance.audioRegistry.getSource("shoot").play(1.0f, r.nextFloat() * 0.3f + 1);
+			Game.instance.audioRegistry.getSource("shoot").play(0.5f, r.nextFloat() * 0.3f + 1);
 		}
 
 		if (player.selectedWeapon == 1 && Game.instance.mouse.isDown(0) && player.lastShot > player.sgCooldown) {

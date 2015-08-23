@@ -31,6 +31,8 @@ public class Game implements IWaffle2Game {
 
 	private IScreen _currentScreen;
 	private IScreen _nextScreen;
+	private boolean _started = false;
+	private boolean _musicPlaying = true;
 
 	public TextureRegistry textureRegistry;
 	public AudioRegistry audioRegistry;
@@ -72,6 +74,7 @@ public class Game implements IWaffle2Game {
 		audioRegistry.registerSound("lost", "/sounds/lost.ogg");
 		audioRegistry.registerSound("select", "/sounds/select.ogg");
 		audioRegistry.registerSound("shoot", "/sounds/shoot.ogg");
+		audioRegistry.registerSound("music", "/sounds/music.ogg");
 
 		audioRegistry.registerSource("coin", "coin", false, 1 * globalGain, 5);
 		audioRegistry.registerSource("death", "death", false, 1 * globalGain, 5);
@@ -79,7 +82,8 @@ public class Game implements IWaffle2Game {
 		audioRegistry.registerSource("hurt", "hurt", false, 1 * globalGain, 5);
 		audioRegistry.registerSource("lost", "lost", false, 1 * globalGain, 1);
 		audioRegistry.registerSource("select", "select", false, 1 * globalGain, 2);
-		audioRegistry.registerSource("shoot", "shoot", false, 0.8f * globalGain, 10);
+		audioRegistry.registerSource("shoot", "shoot", false, 0.7f * globalGain, 10);
+		audioRegistry.registerSource("music", "music", true, 0.5f * globalGain, 1);
 	}
 
 	@Override
@@ -111,6 +115,21 @@ public class Game implements IWaffle2Game {
 
 	@Override
 	public void update(float dt) {
+		if (!_started) {
+			audioRegistry.getSource("music").play();
+			_started = true;
+		}
+
+		if (keyboard.wasPressed(Config.KEY_MUTE)) {
+			if (_musicPlaying) {
+				audioRegistry.getSource("music").stop();
+				_musicPlaying = false;
+			} else {
+				audioRegistry.getSource("music").play();
+				_musicPlaying = true;
+			}
+		}
+
 		if (_nextScreen != null) {
 			_currentScreen = _nextScreen;
 			_nextScreen = null;
